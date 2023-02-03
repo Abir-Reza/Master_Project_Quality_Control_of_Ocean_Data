@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 def process_train_data(num_signals,seq_length,seq_step):
-    train = np.load('././data/train.npy',allow_pickle=True)
+    train = np.load('././settings/data/train.npy',allow_pickle=True)
     print('Loaded train data')
     m, n = train.shape  # m=562387, n=35
 
