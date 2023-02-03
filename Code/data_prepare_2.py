@@ -2,8 +2,6 @@ import numpy as np
 import scipy.io 
 import pandas as pd
 import math
-import openpyxl
-import plotting
 from matplotlib import pyplot as plt
 import json
 from pandas.plotting import parallel_coordinates
@@ -12,13 +10,13 @@ from pandas.plotting import parallel_coordinates
 input_directory = '/Users\macio\Desktop\MAD-GAN_migrated\data\RAW\MSS'
 output_directory = '/Users\macio\Desktop\MAD-GAN_migrated\data\Processed\MSS'
 
-diss_features = ['t','depth','p','salt','grav','rho','rhopot','nu','tdiff','ntcf','ntchp','sigma','tlong','ntc','ntcdepth','eps1','kmin1','kmax1','acc','sinkvel','spikeflag1']
+diss_features = ['t','depth','nu','tdiff','eps1','kmin1','kmax1','acc','sinkvel','spikeflag1']
 mat_features = ['she1']
 file_dict = {
-    # 'm135_1_mss026_':{
-    #                             'data_frame': 'd',
-    #                             'feature' : mat_features,
-    #                             'directory': 'MAT'},
+    'm135_1_mss026_':{
+                                'data_frame': 'd',
+                                'feature' : mat_features,
+                                'directory': 'MAT'},
             'm135_1_':{
                                 'data_frame': 'df',
                                 'feature' : diss_features,
@@ -50,6 +48,23 @@ def create_test_train_data():
     np.save('/Users\macio\Desktop\MAD-GAN_migrated\data\kdd99_train.npy', train_data, allow_pickle=True)
     np.save('/Users\macio\Desktop\MAD-GAN_migrated\data\kdd99_test.npy', test_data, allow_pickle=True)
 
+def get_windowed_data(data):
+    mapped_data = []
+    temp  = []
+    data = data[0]
+    window_size = 1024
+    line_start = 23330
+    window_start = line_start
+    window_end = window_start + window_size
+    total_window = int((len(data) - 23330)/window_size) 
+    for index in range(1,total_window):
+        temp_window = data[window_start:window_end]
+        median = np.median(temp_window)
+        temp.append(median)
+        window_start = window_end
+        window_end = window_end + window_size
+    mapped_data.append(temp)
+    return mapped_data
 
 def preapre_data_from_file(number):
     if number < 10:
@@ -73,17 +88,18 @@ def preapre_data_from_file(number):
         extracted_raw_data = []
 
         print('extracting data from ', file_name)
-        for item in features:
+        for sensor in features:
             if item == 'spikeflag1':
-                feature_data = np.array(raw_data[item][0][0]['opti'])
+                feature_data = np.array(raw_data[sensor][0][0]['opti'])
             else:
-                feature_data = np.array(raw_data[item])
+                feature_data = np.array(raw_data[sensor])
             
             m,n = feature_data.shape
             if m > 1:
                 feature_data = np.reshape(feature_data,(n,m))
-            extracted_raw_data.append(feature_data)
-        
+                windowed_data = get_windowed_data(feature_data)
+            extracted_raw_data.append(windowed_data)
+
     return extracted_raw_data
 
 def get_minimum_data_points(data):
@@ -94,18 +110,11 @@ def get_minimum_data_points(data):
     min_size = min(size_list)
     minimum_data = np.empty((min_size,0), float)
     # print('Minimum datapoint ', min_size)
-    
     for item in data:
-        if (np.size(item) > min_size):
-            temp = item[:,:min_size]
-            m,n = temp.shape
-            temp = temp.reshape(n,m)
-            minimum_data = np.append(minimum_data, np.array(temp), axis=1)
-        else:
-            temp = item
-            m,n = temp.shape
-            temp = temp.reshape(n,m)
-            minimum_data = np.append(minimum_data, np.array(temp), axis=1)
+        temp = np.array(item)
+        m,n = temp.shape
+        temp = temp.reshape(n,m)
+        minimum_data = np.append(minimum_data, np.array(temp), axis=1)
     # print('After minimizing data shape: ', minimum_data.shape)
     return minimum_data,min_size
 
@@ -123,7 +132,6 @@ def save_to_excel(data):
 
 def save_data_file(files,type):
     final_data = []
-
     for number in files:
         data = preapre_data_from_file(number)
         minimum_data_points,min = get_minimum_data_points(data)
@@ -330,7 +338,7 @@ settings = {
 
 }
 
-read_file(10)
+read_file(98)
 create_test_train_data()
 # eval_result_whole('kdd99',settings,'65')
 # eval_result_threshold('kdd99',settings,'65')
