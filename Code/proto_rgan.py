@@ -99,8 +99,8 @@ def train_GAN(epochs):
             train_batch = data_utils.get_batch(samples,batch_size,batch_idx)
             train_step(train_batch)
         print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
-    tf.saved_model.save(discriminator, '/Users\macio\Desktop\MAD-GAN_migrated\our_code\saved_model\discriminators\model_seq_' + str(seq_length) + settings['exp'] + '/')
-    tf.saved_model.save(generator, '/Users\macio\Desktop\MAD-GAN_migrated\our_code\saved_model\generators\model_seq_' + str(seq_length) + settings['exp'] + '/')
+    tf.saved_model.save(discriminator, '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+    tf.saved_model.save(generator, '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/generators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 
     
 train_GAN(num_epoch)
