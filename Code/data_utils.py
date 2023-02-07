@@ -46,7 +46,7 @@ def process_train_data(num_signals,seq_length,seq_step):
     return samples, labels
 
 def process_test_data(num_signals,seq_length,seq_step):
-    test = np.load('././data/test.npy',allow_pickle=True)
+    test = np.load('././settings/data/test.npy',allow_pickle=True)
     print('load kdd99_test from .npy')
 
     m, n = test.shape  # m1=494021, n1=35
@@ -63,7 +63,7 @@ def process_test_data(num_signals,seq_length,seq_step):
     samples = test[:, 0:n - 1]
 
     labels = test[:, n - 1]
-    np.save('./data/labels/real_label_' + str(len(labels)), labels)
+    # np.save('./data/labels/real_label_' + str(len(labels)), labels)
     idx = np.asarray(list(range(0, m)))  # record the idx of each point
     # -- apply PCA dimension reduction for multi-variate GAN-AD -- #
     X_a = samples
@@ -90,7 +90,7 @@ def process_test_data(num_signals,seq_length,seq_step):
     samples = aa
     labels = bb
     index = bbb
-    return samples, labels
+    return samples, labels, index
 
 def get_batch(samples, batch_size, batch_idx, labels=None):
     start_pos = batch_idx * batch_size
