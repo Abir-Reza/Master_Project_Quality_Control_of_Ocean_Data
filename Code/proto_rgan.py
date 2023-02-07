@@ -8,7 +8,7 @@ import data_utils
 import os
 
 
-settings_path = '/Users\macio\Desktop\MAD-GAN_migrated\our_code\settings\gan_train.txt'
+settings_path = '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/settings/gan_train.txt'
 settings = json.load(open(settings_path, 'r'))
 
 batch_size = settings['batch_size']
