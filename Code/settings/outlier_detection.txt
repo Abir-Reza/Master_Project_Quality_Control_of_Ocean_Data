@@ -1,12 +1,12 @@
 {
-"batch_size": 256,
-"latent_dim" : 100,
+"batch_size": 5,
+"latent_dim" : 6,
 "num_epoch": 1,
 "num_pc_dimention": 6,
-"noise_dim": 100,
+"noise_dim": 6,
 "num_of_generated_examples": 16,
 "seq_step": 10,
 "seq_length":256,
-"exp":"1",
-"saved_model_path": "/Users\\macio\\Desktop\\MAD-GAN_migrated\\our_code\\saved_model\\"
+"exp":"3",
+"saved_model_path": "/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/"
 }
