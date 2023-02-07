@@ -35,7 +35,7 @@ d_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 loaded_discriminator = tf.saved_model.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/discriminators/model_seq_' + str(seq_length)+ '_' + settings['exp'] + '/')
 discriminator = loaded_discriminator.signatures["serving_default"]
 
-loaded_generator = tf.saved_model.load(settings['saved_model_path'] + 'generators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+loaded_generator = tf.saved_model.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/generators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 generator = loaded_generator.signatures["serving_default"]
 
 def D_loss(real_data,fake_data):
