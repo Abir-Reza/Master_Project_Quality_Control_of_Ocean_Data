@@ -106,3 +106,29 @@ def get_batch(samples, batch_size, batch_idx, labels=None):
         else:
             assert type(labels) == np.ndarray
             return samples[start_pos:end_pos], labels[start_pos:end_pos]
+
+def seeder(num_signals,seq_length,seq_step):
+    test = np.load('././settings/data/train.npy',allow_pickle=True)
+
+    m, n = test.shape 
+    samples = test[:, 0:n - 1]
+    
+    seed = np.zeros([m,n-1])
+    
+    for i in range(0,n-2):
+        column = samples[:,i:i+1]
+        mean = np.mean(column)
+        var = np.var(column)
+        temp_col = np.random.normal(loc=(mean+1),scale=(0.8*var),size=[m,1])
+        print(temp_col.shape)
+        seed[:,i:i+1] = temp_col
+
+    num_samples_t = (seed.shape[0] - seq_length) // seq_step
+    aa = np.empty([num_samples_t, seq_length, num_signals])
+
+    for j in range(num_samples_t):
+        for i in range(num_signals):
+            aa[j, :, i] = seed[(j * seq_step):(j * seq_step + seq_length), i]
+
+    seed = aa
+    return seed
