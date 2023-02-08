@@ -24,8 +24,8 @@ seq_step = settings['seq_step']
 samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
 noise = data_utils.seeder(num_signal,seq_length,seq_step)
 
-generator_optimizer = tf.keras.optimizers.Adam(1e-4)
-discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+generator_optimizer = tf.keras.optimizers.Adam(5e-1)
+discriminator_optimizer = tf.keras.optimizers.Adam(5e-1)
 seed = tf.random.normal([batch_size, seq_length, latent_dim])
 cross_entropy_with_logit = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)

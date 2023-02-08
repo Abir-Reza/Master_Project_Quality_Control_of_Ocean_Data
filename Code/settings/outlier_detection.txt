@@ -1,12 +1,12 @@
 {
-"batch_size": 5,
+"batch_size": 30,
 "latent_dim" : 6,
-"num_epoch": 1,
+"num_epoch": 20,
 "num_pc_dimention": 6,
 "noise_dim": 6,
 "num_of_generated_examples": 16,
-"seq_step": 10,
-"seq_length":256,
-"exp":"2",
+"seq_step": 50,
+"seq_length":400,
+"exp":"3",
 "saved_model_path": "/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/"
 }
