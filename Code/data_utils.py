@@ -119,7 +119,7 @@ def seeder(num_signals,seq_length,seq_step):
         column = samples[:,i:i+1]
         mean = np.mean(column)
         var = np.var(column)
-        temp_col = np.random.normal(loc=(mean+1),scale=(0.8*var),size=[m,1])
+        temp_col = np.random.normal(loc=(mean*0.6),scale=(0.6*var),size=[m,1])
         print(temp_col.shape)
         seed[:,i:i+1] = temp_col
 
