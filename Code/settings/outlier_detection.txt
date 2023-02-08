@@ -7,6 +7,6 @@
 "num_of_generated_examples": 16,
 "seq_step": 50,
 "seq_length":400,
-"exp":"3",
+"exp":"4",
 "saved_model_path": "/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/"
 }
