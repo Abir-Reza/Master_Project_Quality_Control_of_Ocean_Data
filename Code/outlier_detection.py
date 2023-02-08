@@ -172,6 +172,7 @@ def get_evaluation(Label_test, Label_real, I_mb, seq_step, tao):
     cc = (D_L == L_L)
     cc = list(cc.reshape([-1]))
     N = cc.count(True)
+    L_L = L_L.astype(bool)
 
     Accu = float((N / LL) * 100)
     precision, recall, f1, _ = precision_recall_fscore_support(L_L, D_L, average='binary')
