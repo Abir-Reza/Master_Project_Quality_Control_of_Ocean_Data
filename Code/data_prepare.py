@@ -13,10 +13,10 @@ output_directory = '/Users\macio\Desktop\MAD-GAN_migrated\data\Processed\MSS'
 diss_features = ['t','depth','tdiff','eps1','kmin1','kmax1','acc','sinkvel','spikeflag1']
 mat_features = ['she1']
 file_dict = {
-            # 'm135_1_mss026_':{
-            #                     'data_frame': 'd',
-            #                     'feature' : mat_features,
-            #                     'directory': 'MAT'},
+            'm135_1_mss026_':{
+                                'data_frame': 'd',
+                                'feature' : mat_features,
+                                'directory': 'MAT'},
             'm135_1_':{
                                 'data_frame': 'df',
                                 'feature' : diss_features,
@@ -48,21 +48,17 @@ def create_test_train_data():
     np.save('/Users\macio\Desktop\MAD-GAN_migrated\data\kdd99_train.npy', train_data, allow_pickle=True)
     np.save('/Users\macio\Desktop\MAD-GAN_migrated\data\kdd99_test.npy', test_data, allow_pickle=True)
 
-def get_windowed_data(data):
+def get_windowed_data(data,windows):
     mapped_data = []
     temp  = []
     data = data[0]
-    window_size = 1024
-    line_start = 23330
-    window_start = line_start
-    window_end = window_start + window_size
-    total_window = int((len(data) - 23330)/window_size) 
-    for index in range(1,total_window):
+
+    for i in range(0,windows.shape[0]):
+        window_start = windows[i][0]
+        window_end = windows[i][1]
         temp_window = data[window_start:window_end]
         median = np.median(temp_window)
         temp.append(median)
-        window_start = window_end
-        window_end = window_end + window_size
     mapped_data.append(temp)
     return mapped_data
 
@@ -96,8 +92,14 @@ def preapre_data_from_file(number):
                 feature_data = np.array(raw_data[sensor])
             m,n = feature_data.shape
             if m > 1:
+                # get the frame information from diss files
+                tmp_path = input_directory + '\\DISS\\m135_1_' + number + 'dissfinal'
+                tmp_file_data = scipy.io.loadmat(tmp_path)
+                tmp_data_frame = tmp_file_data['df']
+                windows = tmp_data_frame[0][0]['groups']
+
                 feature_data = np.reshape(feature_data,(n,m))
-                windowed_data = get_windowed_data(feature_data)
+                windowed_data = get_windowed_data(feature_data,windows)
                 feature_data = windowed_data
             extracted_raw_data.append(feature_data)   
     return extracted_raw_data
