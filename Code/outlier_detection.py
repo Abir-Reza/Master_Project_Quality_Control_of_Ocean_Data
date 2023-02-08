@@ -47,43 +47,47 @@ def D_loss(real_data,fake_data):
 def G_loss(fake_data):
     return tf.math.reduce_mean(cross_entropy(tf.ones_like(fake_data), fake_data))
 
-@tf.function
-def train_step(batch_data):
-    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        batch_data = tf.convert_to_tensor(batch_data, dtype=tf.float32)
-        
-        g_output = generator(input_2=batch_data)
-        g_predictions = g_output["dense_2"]
-        g_output = tf.convert_to_tensor(g_predictions, dtype=tf.float32)
-        
-        real_output = discriminator(input_1=batch_data)
-        d_predictions = real_output["dense_1"]
-        real_output = tf.convert_to_tensor(d_predictions, dtype=tf.float32)
-        
-        fake_output = discriminator(input_1=g_output)
-        d_predictions_fake = fake_output["dense_1"]
-        fake_output = tf.convert_to_tensor(d_predictions_fake, dtype=tf.float32)
-        
-        gen_loss = G_loss(g_output)
-        disc_loss = D_loss(real_output,fake_output)
+def train_step():
+    total_d_loss = 0
+    total_g_loss = 0
+    total_batch = int(samples.shape[0] / batch_size)
+    for batch_idx in range(total_batch):
+        batch_data = tf.convert_to_tensor((data_utils.get_batch(samples,batch_size,batch_idx)),dtype=tf.float32)
+        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+            g_output = generator(input_2=batch_data)
+            g_predictions = g_output["dense_2"]
+            g_output = tf.convert_to_tensor(g_predictions, dtype=tf.float32)
+            
+            real_output = discriminator(input_1=batch_data)
+            d_predictions = real_output["dense_1"]
+            real_output = tf.convert_to_tensor(d_predictions, dtype=tf.float32)
+            
+            fake_output = discriminator(input_1=g_output)
+            d_predictions_fake = fake_output["dense_1"]
+            fake_output = tf.convert_to_tensor(d_predictions_fake, dtype=tf.float32)
+            
+            gen_loss = G_loss(g_output)
+            disc_loss = D_loss(real_output,fake_output)
 
-        print('Discriminator loss: ',disc_loss.numpy())
-        gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-        gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+            gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+            gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
 
-        generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
-        discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+            generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+            discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
+            total_d_loss = total_d_loss + np.mean(disc_loss)
+            total_g_loss = total_g_loss + np.mean(gen_loss)
+    print ('Discriminator Loss: {} \tGenerator Loss: {}'.format((total_d_loss/total_batch), (total_g_loss/total_batch)))
 
 def train_GAN(epochs):
     for epoch in range(epochs):
         start = time.time()
-        total_batch = int(samples.shape[0] / batch_size)
-        for batch_idx in range(total_batch):
-            train_batch = data_utils.get_batch(samples,batch_size,batch_idx)
-            train_step(train_batch)
-        print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
-        generate_result(epoch)
+        print('------------------------------------------------------------------------------')
+        print('Epoch {} started'.format(epoch))
+        train_step()
+        print ('Epoch Finished. Time for epoch {} is {} sec\n'.format(epoch + 1, time.time()-start))
+    generate_result(epoch)
+
 
 def get_label(batch):
     batch = tf.convert_to_tensor(batch, dtype=tf.float32)

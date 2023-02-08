@@ -71,37 +71,40 @@ def D_loss(real_data, fake_data):
 def G_loss(fake_data):
     return tf.math.reduce_mean(cross_entropy_with_logit(tf.ones_like(fake_data), fake_data))
 
-@tf.function
-def train_step(batch_data):
+def train_step():
+    total_batch = int(samples.shape[0] / batch_size)
+    total_d_loss = 0
+    total_g_loss = 0
+    for batch_idx in range(total_batch):
+        batch_data = tf.convert_to_tensor((data_utils.get_batch(samples,batch_size,batch_idx)),dtype=tf.float32)
+        batch_noise = tf.convert_to_tensor((data_utils.get_batch(noise,batch_size,0)),dtype=tf.float32)
+        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+            generated_data = generator(batch_noise, training=True)
 
-    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        generated_data = generator(noise, training=True)
+            real_output = discriminator(batch_data, training=True)
+            fake_output = discriminator(generated_data, training=True)
+            
+            gen_loss = G_loss(fake_output)
+            disc_loss = D_loss(real_output, fake_output)
 
-        real_output = discriminator(batch_data, training=True)
-        fake_output = discriminator(generated_data, training=True)
-        
-        gen_loss = G_loss(fake_output)
-        disc_loss = D_loss(real_output, fake_output)
+            gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+            gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
 
-        # print('Generator loss: ',gen_loss.numpy(),' Discriminator loss: ',disc_loss.numpy())
+            generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+            discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
-        gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-        gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
-
-        generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
-        discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-
+            total_d_loss = total_d_loss + np.mean(disc_loss)
+            total_g_loss = total_g_loss + np.mean(gen_loss)
+    print ('Discriminator Loss: {} \tGenerator Loss: {}'.format((total_d_loss/total_batch), (total_g_loss/total_batch)))
 
 def train_GAN(epochs):
     for epoch in range(epochs):
         start = time.time()
-        total_batch = int(samples.shape[0] / batch_size)
-        print('Epoch %s started', epoch)
-        for batch_idx in range(total_batch):
-            train_batch = data_utils.get_batch(samples,batch_size,batch_idx)
-            train_step(train_batch)
-        print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
-    
+        print('------------------------------------------------------------------------------')
+        print('Epoch {} started'.format(epoch))
+        train_step()
+        print ('Epoch Finished. Time for epoch {} is {} secz\n'.format(epoch + 1, time.time()-start))
+            
     #save trained models
     d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
     g_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/generators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
