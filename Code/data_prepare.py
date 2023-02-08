@@ -10,13 +10,13 @@ from pandas.plotting import parallel_coordinates
 input_directory = '/Users\macio\Desktop\MAD-GAN_migrated\data\RAW\MSS'
 output_directory = '/Users\macio\Desktop\MAD-GAN_migrated\data\Processed\MSS'
 
-diss_features = ['t','depth','nu','tdiff','eps1','kmin1','kmax1','acc','sinkvel','spikeflag1']
+diss_features = ['t','depth','tdiff','eps1','kmin1','kmax1','acc','sinkvel','spikeflag1']
 mat_features = ['she1']
 file_dict = {
-    'm135_1_mss026_':{
-                                'data_frame': 'd',
-                                'feature' : mat_features,
-                                'directory': 'MAT'},
+            # 'm135_1_mss026_':{
+            #                     'data_frame': 'd',
+            #                     'feature' : mat_features,
+            #                     'directory': 'MAT'},
             'm135_1_':{
                                 'data_frame': 'df',
                                 'feature' : diss_features,
@@ -71,6 +71,8 @@ def preapre_data_from_file(number):
         number = '00' + str(number)
     else:
         number = '0' + str(number)
+    extracted_raw_data = []
+    
     for item in file_dict:
         if item == 'm135_1_mss026_':
             file_name = item + number
@@ -85,21 +87,19 @@ def preapre_data_from_file(number):
         file_data = scipy.io.loadmat(path)
         data_frame = file_data[data_frame_name]
         raw_data = data_frame[0][0]
-        extracted_raw_data = []
 
         print('extracting data from ', file_name)
         for sensor in features:
-            if item == 'spikeflag1':
+            if sensor == 'spikeflag1':
                 feature_data = np.array(raw_data[sensor][0][0]['opti'])
             else:
                 feature_data = np.array(raw_data[sensor])
-            
             m,n = feature_data.shape
             if m > 1:
                 feature_data = np.reshape(feature_data,(n,m))
                 windowed_data = get_windowed_data(feature_data)
-            extracted_raw_data.append(windowed_data)
-
+                feature_data = windowed_data
+            extracted_raw_data.append(feature_data)   
     return extracted_raw_data
 
 def get_minimum_data_points(data):
