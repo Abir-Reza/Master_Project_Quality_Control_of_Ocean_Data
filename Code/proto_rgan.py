@@ -5,6 +5,7 @@ import numpy as np
 import data_utils
 from keras.layers import LSTM, Dense, Input
 from keras.models import Model
+import os
 
 
 settings_path = '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/settings/gan_train.txt'
