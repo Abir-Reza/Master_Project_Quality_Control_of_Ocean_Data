@@ -6,7 +6,7 @@
 "num_of_generated_examples": 16,
 "seq_step": 30,
 "seq_length":256,
-"exp":"7",
+"exp":"8",
 "proximity": 2.0,
 "optimizer_call_threshold": 50
 }

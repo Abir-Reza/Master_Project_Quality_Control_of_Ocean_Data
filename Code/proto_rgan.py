@@ -20,11 +20,10 @@ num_of_generated_examples = settings['num_of_generated_examples']
 seq_step = settings['seq_step']
 proximity = settings['proximity']
 optimizer_call_threshold = settings['optimizer_call_threshold']
-
+d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 
 samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
 noise = data_utils.seeder(num_signal,seq_length,seq_step)
-
 test_sample,test_labels, test_index = data_utils.process_test_data(num_signal,seq_length,seq_step)
 
 generator_optimizer = tf.keras.optimizers.Adam(.001)
@@ -44,8 +43,7 @@ def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
     x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
     x = LSTM(64, return_sequences=True,activation='tanh')(x)
-    # x = LSTM(32, return_sequences=True,activation='relu')(x)
-    # x = Dense(10, activation='sigmoid')(x)
+    x = Dense(16, activation='relu')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
     return discriminator
@@ -55,7 +53,7 @@ generator = create_generator()
 
 discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.005), loss='binary_crossentropy')
 generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.0001), loss='binary_crossentropy')
-# discriminator.trainable = False
+discriminator.trainable = False
 
 def D_loss(real_data, fake_data):
     real_loss = tf.math.reduce_mean(cross_entropy(tf.zeros_like(real_data), real_data))
@@ -83,31 +81,19 @@ def train_step():
 
             real_input_predictions = discriminator(batch_data, training=True)
             generated_input_predictions = discriminator(generated_data, training=True)
-    
-            MSE = tf.keras.losses.mean_squared_error(batch_data, generated_data)
-            print('MSE after batch lot {}: {}'.format(batch_idx, (np.mean(MSE))))
-            
+                
             gen_loss = G_loss(generated_input_predictions)
             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
 
-            # temp_g_loss.append(gen_loss)
-            # temp_d_loss.append(disc_loss)
-
             if call_optimizer_count > optimizer_call_threshold :
-                print('\n**********\tOptimizing Model\t**********\n')
-                # temp_avg_g_loss = tf.math.reduce_mean(temp_g_loss)
-                # temp_avg_d_loss = tf.math.reduce_mean(temp_d_loss)
-
+                print('\n**********\tOptimizing Model\t**********')
                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 
                 generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
                 discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-
                 call_optimizer_count = 0
-                temp_g_loss = []
-                temp_d_loss = []
-
+                
             total_d_loss = total_d_loss + np.mean(disc_loss)
             total_g_loss = total_g_loss + np.mean(gen_loss)
     print ('Discriminator Loss: {} \tGenerator Loss: {}'.format((total_d_loss/total_batch), (total_g_loss/total_batch)))
@@ -120,18 +106,17 @@ def train_GAN(epochs):
         train_step()
         generate_result(epoch)
         print ('Epoch Finished. Time for epoch {} is {} sec\n'.format(epoch + 1, time.time()-start))
-            
-    #save trained models
-    d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
-    g_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/generators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
     tf.saved_model.save(discriminator, d_path)
-    tf.saved_model.save(generator, g_path)
 
 def get_final_prediction(batch):
-    predictions = discriminator(batch)
+    loaded_discriminator = tf.saved_model.load(d_path)
+    discriminator = loaded_discriminator.signatures["serving_default"]
+    batch_data = tf.convert_to_tensor(batch ,dtype=tf.float32)
+    predictions = discriminator(input_1=batch_data)
+    predictions = predictions["dense_1"]
     return predictions
 
-def generate_result(epoch):
+def generate_result():
         num_samples_t = test_sample.shape[0]
         D_test = np.empty([num_samples_t, seq_length, 1])
         R_labels = np.empty([num_samples_t, seq_length, 1])
@@ -171,13 +156,15 @@ def generate_result(epoch):
         # np.save('./predictions/real_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(epoch) ,R_labels)
 
         results = np.zeros([6, 4])
-        for i in range(2, 8):
-            tao = 0.1 * i
+        org_shape = data_utils.de_shape(D_test, R_labels, I_mb, seq_step)
+        tao_min = np.min(org_shape)
+        for i in range(1, 7):
+            tao = float(tao_min + (0.02*i))
             Accu, Pre, Rec, F1 = data_utils.get_evaluation(D_test, R_labels, I_mb, seq_step, tao)
-            print('seq_length:', seq_length)
-            print('Comb-logits-based-Epoch: {}; tao={:.1}; Accu: {:.4}; Pre: {:.4}; Rec: {:.4}; F1: {:.4}\n'
-                  .format(epoch, tao, Accu, Pre, Rec, F1))
-            results[i-2 , :] = [Accu, Pre, Rec, F1]
+            print('Final Evaluation: tao={:.2}; Accu: {:.4}; Pre: {:.4}; Rec: {:.4}; F1: {:.4}\n'
+                  .format(tao, Accu, Pre, Rec, F1))
+            results[i-1 , :] = [Accu, Pre, Rec, F1]
         return results
 
 train_GAN(num_epoch)
+generate_result()
