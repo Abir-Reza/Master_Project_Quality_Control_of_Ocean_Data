@@ -8,5 +8,5 @@
 "seq_length":256,
 "exp":"8",
 "proximity": 2.0,
-"optimizer_call_threshold": 50
+"optimizer_call_threshold": 35
 }
