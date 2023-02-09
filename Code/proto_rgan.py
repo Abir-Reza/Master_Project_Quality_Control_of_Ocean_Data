@@ -104,7 +104,6 @@ def train_GAN(epochs):
         print('Epoch {} started'.format(epoch))
         print('====================================================================================================================')
         train_step()
-        generate_result(epoch)
         print ('Epoch Finished. Time for epoch {} is {} sec\n'.format(epoch + 1, time.time()-start))
     tf.saved_model.save(discriminator, d_path)
 
