@@ -15,9 +15,10 @@ seq_length = settings['seq_length']
 latent_dim = settings['latent_dim']
 num_epoch = settings['num_epoch']
 num_signal = settings['num_pc_dimention']
-noise_dim = settings['noise_dim']
 num_of_generated_examples = settings['num_of_generated_examples']
 seq_step = settings['seq_step']
+proximity = settings['proximity']
+optimizer_call_threshold = settings['optimizer_call_threshold']
 
 
 samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
