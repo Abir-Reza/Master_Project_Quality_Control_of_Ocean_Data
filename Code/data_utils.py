@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.metrics import precision_recall_fscore_support
 
 def process_train_data(num_signals,seq_length,seq_step):
     train = np.load('././settings/data/train.npy',allow_pickle=True)
@@ -132,40 +133,39 @@ def seeder(num_signals,seq_length,seq_step):
 
     seed = aa
     return seed
+def get_evaluation(Label_test, Label_real, I_mb, seq_step, tao):
+    aa = Label_test.shape[0]
+    bb = Label_test.shape[1]
+    LL = (aa-1)*seq_step+bb
+    
+    Label_test = abs(Label_test.reshape([aa, bb]))
+    Label_real = Label_real .reshape([aa, bb])
+    I_mb = I_mb .reshape([aa, bb])
 
-    def get_evaluation(Label_test, Label_real, I_mb, seq_step, tao):
-        aa = Label_test.shape[0]
-        bb = Label_test.shape[1]
-        LL = (aa-1)*seq_step+bb
-        
-        Label_test = abs(Label_test.reshape([aa, bb]))
-        Label_real = Label_real .reshape([aa, bb])
-        I_mb = I_mb .reshape([aa, bb])
+    D_L = np.zeros([LL, 1])
+    L_L = np.zeros([LL, 1])
+    Count = np.zeros([LL, 1])
 
-        D_L = np.zeros([LL, 1])
-        L_L = np.zeros([LL, 1])
-        Count = np.zeros([LL, 1])
+    for i in range(0, aa):
+        for j in range(0, bb):
+            # print('index:', i*10+j)
+            D_L[i*seq_step+j] += Label_test[i, j]
+            L_L[i * seq_step + j] += Label_real[i, j]
+            Count[i * seq_step + j] += 1
 
-        for i in range(0, aa):
-            for j in range(0, bb):
-                # print('index:', i*10+j)
-                D_L[i*seq_step+j] += Label_test[i, j]
-                L_L[i * seq_step + j] += Label_real[i, j]
-                Count[i * seq_step + j] += 1
+    D_L /= Count
+    L_L /= Count
+    for i in range(LL):
+        if D_L[i] > tao:
+            D_L[i] = 1
+        else:
+            D_L[i] = 0
 
-        D_L /= Count
-        L_L /= Count
-        for i in range(LL):
-            if D_L[i] > tao:
-                D_L[i] = 1
-            else:
-                D_L[i] = 0
+    cc = (D_L == L_L)
+    cc = list(cc.reshape([-1]))
+    N = cc.count(True)
+    L_L = L_L.astype(bool)
+    Accu = float((N / LL) * 100)
+    precision, recall, f1, _ = precision_recall_fscore_support(L_L, D_L, average='binary')
 
-        cc = (D_L == L_L)
-        cc = list(cc.reshape([-1]))
-        N = cc.count(True)
-        L_L = L_L.astype(bool)
-        Accu = float((N / LL) * 100)
-        precision, recall, f1, _ = precision_recall_fscore_support(L_L, D_L, average='binary')
-
-        return Accu, precision, recall, f1
+    return Accu, precision, recall, f1

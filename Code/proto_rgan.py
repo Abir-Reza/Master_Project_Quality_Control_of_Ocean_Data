@@ -89,16 +89,16 @@ def train_step():
             gen_loss = G_loss(generated_input_predictions)
             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
 
-            temp_g_loss.append(gen_loss)
-            temp_d_loss.append(disc_loss)
+            # temp_g_loss.append(gen_loss)
+            # temp_d_loss.append(disc_loss)
 
             if call_optimizer_count > optimizer_call_threshold :
                 print('\n**********\tOptimizing Model\t**********\n')
-                temp_avg_g_loss = tf.math.reduce_mean(temp_g_loss)
-                temp_avg_d_loss = tf.math.reduce_mean(temp_d_loss)
+                # temp_avg_g_loss = tf.math.reduce_mean(temp_g_loss)
+                # temp_avg_d_loss = tf.math.reduce_mean(temp_d_loss)
 
-                gradients_of_generator = gen_tape.gradient(temp_avg_g_loss, generator.trainable_variables)
-                gradients_of_discriminator = disc_tape.gradient(temp_avg_d_loss, discriminator.trainable_variables)
+                gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+                gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 
                 generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
                 discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
