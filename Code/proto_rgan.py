@@ -26,8 +26,8 @@ noise = data_utils.seeder(num_signal,seq_length,seq_step)
 
 test_sample,test_labels, test_index = data_utils.process_test_data(num_signal,seq_length,seq_step)
 
-generator_optimizer = tf.keras.optimizers.Adam(.0001)
-discriminator_optimizer = tf.keras.optimizers.Adam(.05)
+generator_optimizer = tf.keras.optimizers.Adam(.001)
+discriminator_optimizer = tf.keras.optimizers.Adam(.005)
 seed = tf.random.normal([batch_size, seq_length, latent_dim])
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
@@ -41,10 +41,10 @@ def create_generator():
 
 def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
-    x = LSTM(128, return_sequences=True, activation='relu')(discriminator_input)
-    x = LSTM(64, return_sequences=True,activation='relu')(x)
-    x = LSTM(32, return_sequences=True,activation='relu')(x)
-    x = Dense(10, activation='sigmoid')(x)
+    x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
+    x = LSTM(64, return_sequences=True,activation='tanh')(x)
+    # x = LSTM(32, return_sequences=True,activation='relu')(x)
+    # x = Dense(10, activation='sigmoid')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
     return discriminator
