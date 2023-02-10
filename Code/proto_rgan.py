@@ -6,6 +6,7 @@ import data_utils
 from keras.layers import LSTM, Dense, Input
 from keras.models import Model
 import os
+from keras.layers import BatchNormalization
 
 
 settings_path = '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/settings/gan_train.txt'
@@ -33,8 +34,10 @@ cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
 def create_generator():
     inputs = Input(batch_input_shape=(None,seq_length, latent_dim))
-    x = LSTM(128, return_sequences=True)(inputs)
+    x = LSTM(128, return_sequences=True)(inputs) 
+    x = BatchNormalization()(x)
     x = LSTM(64, activation='tanh',return_sequences=True)(x)
+    x = BatchNormalization()(x)
     outputs = Dense(num_signal, activation='tanh')(x)
     generator = Model(inputs, outputs)
     return generator
@@ -42,7 +45,9 @@ def create_generator():
 def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
     x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
+    x = BatchNormalization()(x)
     x = LSTM(64, return_sequences=True,activation='tanh')(x)
+    x = BatchNormalization()(x)
     x = Dense(16, activation='relu')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
@@ -86,13 +91,14 @@ def train_step():
             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
 
             if call_optimizer_count > optimizer_call_threshold :
-                print('\n**********\tOptimizing Model\t**********')
+                print('**********\tOptimizing Model\t**********')
                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 
-                generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
-                discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-                call_optimizer_count = 0
+                gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+                gradients_of_generator, _ = tf.clip_by_global_norm(gradients_of_generator, clip_norm=0.9)
+                gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+                gradients_of_discriminator, _ = tf.clip_by_global_norm(gradients_of_discriminator, clip_norm=0.9)
                 
             total_d_loss = total_d_loss + np.mean(disc_loss)
             total_g_loss = total_g_loss + np.mean(gen_loss)
