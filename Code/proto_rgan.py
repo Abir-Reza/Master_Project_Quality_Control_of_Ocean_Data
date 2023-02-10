@@ -48,7 +48,7 @@ def create_discriminator():
     x = BatchNormalization()(x)
     x = LSTM(64, return_sequences=True,activation='tanh')(x)
     x = BatchNormalization()(x)
-    x = Dense(16, activation='relu')(x)
+    x = Dense(16, activation='tanh')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
     return discriminator
