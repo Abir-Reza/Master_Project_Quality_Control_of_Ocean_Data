@@ -81,27 +81,49 @@ def train_step():
         batch_noise = tf.convert_to_tensor((data_utils.get_batch(noise,batch_size,0)),dtype=tf.float32)
         call_optimizer_count += 1
         # batch_noise = tf.random.normal([batch_size,seq_length,num_signal])
-        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        with tf.GradientTape() as gen_tape:
             generated_data = generator(seed, training=True)
-
             real_input_predictions = discriminator(batch_data, training=True)
             generated_input_predictions = discriminator(generated_data, training=True)
-                
             gen_loss = G_loss(generated_input_predictions)
-            disc_loss = D_loss(real_input_predictions, generated_input_predictions)
+            gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+            gradients_of_generator = tf.clip_by_global_norm(gradients_of_generator, clip_norm=0.9)
 
-            if call_optimizer_count > optimizer_call_threshold :
-                print('**********\tOptimizing Model\t**********')
-                gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-                gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+        with tf.GradientTape() as disc_tape:
+            disc_loss = D_loss(real_input_predictions, generated_input_predictions)
+            gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+            gradients_of_discriminator = tf.clip_by_global_norm(gradients_of_discriminator, clip_norm=0.9)
+
+        if call_optimizer_count > optimizer_call_threshold:
+            print('**********\tOptimizing Model\t**********')
+            optimizer_generator.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+            optimizer_discriminator.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+
+        total_d_loss = total_d_loss + np.mean(disc_loss)
+        total_g_loss = total_g_loss + np.mean(gen_loss)
+
+#         with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+#             generated_data = generator(seed, training=True)
+
+#             real_input_predictions = discriminator(batch_data, training=True)
+#             generated_input_predictions = discriminator(generated_data, training=True)
                 
-                gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-                gradients_of_generator, _ = tf.clip_by_global_norm(gradients_of_generator, clip_norm=0.9)
-                gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
-                gradients_of_discriminator, _ = tf.clip_by_global_norm(gradients_of_discriminator, clip_norm=0.9)
+#             gen_loss = G_loss(generated_input_predictions)
+#             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
+
+#             if call_optimizer_count > optimizer_call_threshold :
+#                 print('**********\tOptimizing Model\t**********')
+#                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+#                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 
-            total_d_loss = total_d_loss + np.mean(disc_loss)
-            total_g_loss = total_g_loss + np.mean(gen_loss)
+#                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+#                 gradients_of_generator, _ = tf.clip_by_global_norm(gradients_of_generator, clip_norm=0.9)
+#                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+#                 gradients_of_discriminator, _ = tf.clip_by_global_norm(gradients_of_discriminator, clip_norm=0.9)
+                
+#             total_d_loss = total_d_loss + np.mean(disc_loss)
+#             total_g_loss = total_g_loss + np.mean(gen_loss)
+
     print ('Discriminator Loss: {} \tGenerator Loss: {}'.format((total_d_loss/total_batch), (total_g_loss/total_batch)))
 
 def train_GAN(epochs):
