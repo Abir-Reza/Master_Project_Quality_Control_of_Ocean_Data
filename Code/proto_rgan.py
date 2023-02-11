@@ -38,7 +38,7 @@ def create_generator():
     x = BatchNormalization()(x)
     x = LSTM(64, activation='tanh',return_sequences=True)(x)
     x = BatchNormalization()(x)
-    outputs = Dense(num_signal, activation='tanh')(x)
+    outputs = Dense(num_signal, activation='relu')(x)
     generator = Model(inputs, outputs)
     return generator
 
