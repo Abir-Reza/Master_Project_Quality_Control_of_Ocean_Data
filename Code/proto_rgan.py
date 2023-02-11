@@ -96,12 +96,13 @@ def train_step():
                 
                 
                 
-                gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+#                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
                 gradients_of_generator, _ = tf.clip_by_global_norm(gradients_of_generator, clip_norm=0.9)
                 del gen_tape
-                gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+#                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 gradients_of_discriminator, _ = tf.clip_by_global_norm(gradients_of_discriminator, clip_norm=0.9)
+                del disc_tape
                 
             total_d_loss = total_d_loss + np.mean(disc_loss)
             total_g_loss = total_g_loss + np.mean(gen_loss)
