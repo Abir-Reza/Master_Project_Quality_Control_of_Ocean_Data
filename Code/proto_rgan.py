@@ -56,13 +56,13 @@ def create_discriminator():
 discriminator = create_discriminator()
 generator = create_generator()
 
-discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.005), loss='binary_crossentropy')
-generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.0001), loss='binary_crossentropy')
+discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.5), loss='binary_crossentropy')
+generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.35), loss='binary_crossentropy')
 discriminator.trainable = False
 
 def D_loss(real_data, fake_data):
-    real_loss = tf.math.reduce_mean(cross_entropy(tf.zeros_like(real_data), real_data))
-    fake_loss = tf.math.reduce_mean(cross_entropy(tf.ones_like(fake_data), fake_data))
+    real_loss = tf.math.reduce_mean(cross_entropy(tf.ones_like(real_data), real_data))
+    fake_loss = tf.math.reduce_mean(cross_entropy(tf.zeros_like(fake_data), fake_data))
     total_loss = real_loss + fake_loss
     return total_loss
   
@@ -105,11 +105,21 @@ def train_step():
     print ('Discriminator Loss: {} \tGenerator Loss: {}'.format((total_d_loss/total_batch), (total_g_loss/total_batch)))
 
 def train_GAN(epochs):
+    loss_tracker = []
     for epoch in range(epochs):
         start = time.time()
         print('Epoch {} started'.format(epoch))
         print('====================================================================================================================')
-        train_step()
+        avg_d_loss = train_step()
+        loss_tracker.append(avg_d_loss)
+        if(len(loss_tracker)>4):
+            avg = np.average(loss_tracker)
+            diff = abs(avg_d_loss - avg)
+            if diff < 0.0001:
+                print('BREAKING EPOCH LOOP!!!!!VANISHING GRADIENT DETECTED')
+                break
+            else:
+               loss_tracker.pop(0)
         print ('Epoch Finished. Time for epoch {} is {} sec\n'.format(epoch + 1, time.time()-start))
     tf.saved_model.save(discriminator, d_path)
 
@@ -160,11 +170,11 @@ def generate_result():
         # np.save('./predictions/prediction_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(epoch) ,D_test)
         # np.save('./predictions/real_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(epoch) ,R_labels)
 
-        results = np.zeros([6, 4])
+        results = np.zeros([10, 4])
         org_shape = data_utils.de_shape(D_test, R_labels, I_mb, seq_step)
         tao_min = np.min(org_shape)
-        for i in range(1, 7):
-            tao = float(tao_min + (0.02*i))
+        for i in range(1, 10):
+            tao = float(tao_min + (0.15*i))
             Accu, Pre, Rec, F1 = data_utils.get_evaluation(D_test, R_labels, I_mb, seq_step, tao)
             print('Final Evaluation: tao={:.2}; Accu: {:.4}; Pre: {:.4}; Rec: {:.4}; F1: {:.4}\n'
                   .format(tao, Accu, Pre, Rec, F1))
