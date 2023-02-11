@@ -225,7 +225,7 @@ def generate_result():
         org_shape = data_utils.de_shape(D_test, R_labels, I_mb, seq_step)
         tao_min = np.min(org_shape)
         for i in range(1, 10):
-            tao = float(tao_min + (0.15*i))
+            tao = float(tao_min + (0.9*i))
             Accu, Pre, Rec, F1 = data_utils.get_evaluation(D_test, R_labels, I_mb, seq_step, tao)
             print('Final Evaluation: tao={:.2}; Accu: {:.4}; Pre: {:.4}; Rec: {:.4}; F1: {:.4}\n'
                   .format(tao, Accu, Pre, Rec, F1))
