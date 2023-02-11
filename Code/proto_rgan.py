@@ -93,6 +93,7 @@ def train_step():
             if call_optimizer_count > optimizer_call_threshold :
                 print('**********\tOptimizing Model\t**********')
                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+                gen_tape.clear_tape()
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
                 
                 gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
