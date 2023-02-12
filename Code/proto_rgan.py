@@ -132,8 +132,8 @@ def train_step():
             gen_loss = G_loss(generated_input_predictions)
             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
             
-            print('gen loss'.format(gen_loss))
-            print('disc_loss loss'.format(disc_loss))
+            print('gen loss {}'.format(gen_loss))
+            print('disc_loss loss {}'.format(disc_loss))
            
 
             # temp_g_loss.append(gen_loss)
