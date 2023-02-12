@@ -3,7 +3,7 @@ import json
 import time
 import numpy as np
 import data_utils
-import data_prepare_2
+# import data_prepare_2
 from keras.layers import LSTM, Dense, Input
 from keras.models import Model
 import os
