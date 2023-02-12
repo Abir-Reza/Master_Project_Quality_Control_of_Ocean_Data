@@ -3,6 +3,7 @@ import json
 import time
 import numpy as np
 import data_utils
+import data_prepare_2
 from keras.layers import LSTM, Dense, Input
 from keras.models import Model
 import os
@@ -23,8 +24,13 @@ proximity = settings['proximity']
 optimizer_call_threshold = settings['optimizer_call_threshold']
 d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 
-samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
-noise = data_utils.seeder(num_signal,seq_length,seq_step)
+# for whole data with pca
+# samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
+# noise = data_utils.seeder(num_signal,seq_length,seq_step)
+
+# for data with out pca
+samples,labels = data_prepare_2.process_train_data(num_signal,seq_length,seq_step)
+noise = data_prepare_2.seeder(num_signal,seq_length,seq_step)
 test_sample,test_labels, test_index = data_utils.process_test_data(num_signal,seq_length,seq_step)
 
 generator_optimizer = tf.keras.optimizers.Adam(.001)
