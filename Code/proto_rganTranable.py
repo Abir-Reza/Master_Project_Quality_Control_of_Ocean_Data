@@ -8,7 +8,8 @@ from keras.models import Model
 from keras import regularizers
 import os
 
-settings_path = '/Users\macio\Desktop\MAD-GAN_migrated\our_code\settings\gan_train.txt'
+# settings_path = '/Users\macio\Desktop\MAD-GAN_migrated\our_code\settings\gan_train.txt'
+settings_path = '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/settings/gan_train.txt'
 settings = json.load(open(settings_path, 'r'))
 
 batch_size = settings['batch_size']
@@ -20,7 +21,8 @@ num_of_generated_examples = settings['num_of_generated_examples']
 seq_step = settings['seq_step']
 proximity = settings['proximity']
 optimizer_call_threshold = settings['optimizer_call_threshold']
-d_path = os.path.join('/Users\macio\Desktop\MAD-GAN_migrated\our_code\saved_model\discriminators\model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+# d_path = os.path.join('/Users\macio\Desktop\MAD-GAN_migrated\our_code\saved_model\discriminators\model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 
 
 samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
