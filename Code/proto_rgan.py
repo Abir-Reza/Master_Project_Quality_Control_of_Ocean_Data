@@ -4,8 +4,9 @@ import time
 import numpy as np
 import data_utils
 # import data_prepare_2
-from keras.layers import LSTM, Dense, Input,Dropout
+from keras.layers import LSTM, Dense, Input,Dropout,LeakyReLU
 from keras.models import Model
+from keras import regularizers
 
 import os
 from keras.layers import BatchNormalization
