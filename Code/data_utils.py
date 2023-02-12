@@ -3,7 +3,8 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import precision_recall_fscore_support
 
 def process_train_data(num_signals,seq_length,seq_step):
-    train = np.load('././settings/data/train.npy',allow_pickle=True)
+#     train = np.load('././settings/data/train.npy',allow_pickle=True)
+    train = np.load('././settings/data/kdd99_train.npy',allow_pickle=True)
     print('Loaded train data')
     m, n = train.shape  # m=562387, n=35
 
@@ -47,7 +48,8 @@ def process_train_data(num_signals,seq_length,seq_step):
     return samples, labels
 
 def process_test_data(num_signals,seq_length,seq_step):
-    test = np.load('././settings/data/test.npy',allow_pickle=True)
+#     test = np.load('././settings/data/test.npy',allow_pickle=True)
+    test = np.load('././settings/data/kdd99_test.npy',allow_pickle=True)
     print('load kdd99_test from .npy')
 
     m, n = test.shape  # m1=494021, n1=35
