@@ -38,23 +38,56 @@ discriminator_optimizer = tf.keras.optimizers.Adam(.005)
 seed = tf.random.normal([batch_size, seq_length, latent_dim])
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
+# def create_generator():
+#     inputs = Input(batch_input_shape=(None,seq_length, latent_dim))
+#     x = LSTM(128, return_sequences=True)(inputs) 
+#     x = BatchNormalization()(x)
+#     x = LSTM(64, activation='tanh',return_sequences=True)(x)
+#     x = BatchNormalization()(x)
+#     outputs = Dense(num_signal, activation='relu')(x)
+#     generator = Model(inputs, outputs)
+#     return generator
+
+# def create_discriminator():
+#     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
+#     x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
+#     x = BatchNormalization()(x)
+#     x = LSTM(64, return_sequences=True,activation='tanh')(x)
+#     x = BatchNormalization()(x)
+#     x = Dense(16, activation='relu')(x)
+#     discriminator_output = Dense(1, activation='sigmoid')(x)
+#     discriminator = Model(discriminator_input, discriminator_output)
+#     return discriminator
+
+
 def create_generator():
     inputs = Input(batch_input_shape=(None,seq_length, latent_dim))
+    x = LSTM(512, return_sequences=True)(inputs) 
+    x = BatchNormalization()(x)
+    x = LSTM(256, return_sequences=True)(inputs) 
     x = LSTM(128, return_sequences=True)(inputs) 
-    x = BatchNormalization()(x)
+    x = Dropout(0.35)(x)
     x = LSTM(64, activation='tanh',return_sequences=True)(x)
-    x = BatchNormalization()(x)
+    x = Dense(128, activation='tanh')(x)
+    x = Dropout(0.25)(x)
+    x = Dense(64, activation='relu')(x)
     outputs = Dense(num_signal, activation='relu')(x)
     generator = Model(inputs, outputs)
     return generator
 
 def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
-    x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
+    x = LSTM(256, return_sequences=True, activation='relu')(discriminator_input)
     x = BatchNormalization()(x)
-    x = LSTM(64, return_sequences=True,activation='tanh')(x)
-    x = BatchNormalization()(x)
-    x = Dense(16, activation='relu')(x)
+    x = LSTM(128, return_sequences=True,activation='relu')(x)
+    x = LeakyReLU()(x)
+    x = LSTM(128, return_sequences=True,activation='relu')(x)
+    x = LSTM(64, return_sequences=True,activation='relu')(x)
+    x = Dropout(0.35)(x)
+    x = LSTM(32, return_sequences=True,activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
+    x = Dense(64, activation='relu')(x)
+    x = Dense(4, activation='relu')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
     return discriminator
