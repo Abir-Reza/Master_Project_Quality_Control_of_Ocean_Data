@@ -124,9 +124,9 @@ def train_step():
             generated_data = generator(seed, training=True)
 
             real_input_predictions = discriminator(batch_data, training=True)
-            print("real input predictions" + real_input_predictions)
+            tf.print("real input predictions" + real_input_predictions)
             generated_input_predictions = discriminator(generated_data, training=True)
-            print("generated input predictions" + generated_input_predictions)
+            tf.print("generated input predictions" + generated_input_predictions)
     
             # MSE = tf.keras.losses.mean_squared_error(batch_data, generated_data)
             # print('MSE after batch lot {}: {}'.format(batch_idx, (np.mean(MSE))))
