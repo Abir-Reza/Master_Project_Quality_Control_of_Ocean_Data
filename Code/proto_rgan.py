@@ -124,15 +124,16 @@ def train_step():
             generated_data = generator(seed, training=True)
 
             real_input_predictions = discriminator(batch_data, training=True)
-            tf.print("real input predictions" + real_input_predictions)
             generated_input_predictions = discriminator(generated_data, training=True)
-            tf.print("generated input predictions" + generated_input_predictions)
     
             # MSE = tf.keras.losses.mean_squared_error(batch_data, generated_data)
             # print('MSE after batch lot {}: {}'.format(batch_idx, (np.mean(MSE))))
             
             gen_loss = G_loss(generated_input_predictions)
             disc_loss = D_loss(real_input_predictions, generated_input_predictions)
+            
+            print("gen loss" +gen_loss + "dis loss" +disc_loss)
+           
 
             # temp_g_loss.append(gen_loss)
             # temp_d_loss.append(disc_loss)
