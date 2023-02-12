@@ -80,7 +80,7 @@ def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
     x = LSTM(256, return_sequences=True, activation='relu')(discriminator_input)
     x = BatchNormalization()(x)
-    x = LSTM(128, return_sequences=True,activation='relu')(x)
+    x = LSTM(128, return_sequences=True,kernel_regularizer=regularizers.l1(0.76),activation='relu')(x)
 #     x = LeakyReLU()(x)
 #     x = LSTM(128, return_sequences=True,activation='relu')(x)
     x = LSTM(64, return_sequences=True,activation='relu')(x)
@@ -125,6 +125,9 @@ def train_step():
 
             real_input_predictions = discriminator(batch_data, training=True)
             generated_input_predictions = discriminator(generated_data, training=True)
+            print('real_input_predictions {}'.format(real_input_predictions))
+            print('generated_input_predictions {}'.format(generated_input_predictions))
+            
     
             # MSE = tf.keras.losses.mean_squared_error(batch_data, generated_data)
             # print('MSE after batch lot {}: {}'.format(batch_idx, (np.mean(MSE))))
