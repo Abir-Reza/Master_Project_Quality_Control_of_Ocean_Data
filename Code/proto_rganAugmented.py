@@ -75,13 +75,13 @@ generator = create_generator()
 # g_saved_weight = np.load('/Users\macio\Desktop\MAD-GAN_migrated\saved_parameters\set_1\g_weight_128_23.npy', allow_pickle=True)
 # d_saved_weight = np.load('/Users\macio\Desktop\MAD-GAN_migrated\saved_parameters\set_1\d_weight_128_23.npy', allow_pickle=True)
 # saved_seed = np.load('/Users\macio\Desktop\MAD-GAN_migrated\saved_parameters\set_1\seed_128_23.npy', allow_pickle=True)
-g_saved_weight = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/g_weight_128_23.npy', allow_pickle=True)
-d_saved_weight = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/d_weight_128_23.npy', allow_pickle=True)
-saved_seed = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/seed_128_23.npy', allow_pickle=True)
+# g_saved_weight = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/g_weight_128_23.npy', allow_pickle=True)
+# d_saved_weight = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/d_weight_128_23.npy', allow_pickle=True)
+# saved_seed = np.load('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_parameters/set_1/seed_128_23.npy', allow_pickle=True)
 
 # discriminator.set_weights(d_saved_weight)
 # generator.set_weights(g_saved_weight)
-seed = tf.convert_to_tensor(saved_seed,dtype=tf.float32)
+# seed = tf.convert_to_tensor(saved_seed,dtype=tf.float32)
 
 
 discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.005), loss='binary_crossentropy')
