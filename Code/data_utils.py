@@ -118,34 +118,35 @@ def process_test_data(num_signals,seq_length,seq_step):
     labels = test[:, n - 1]
     # np.save('./data/labels/real_label_' + str(len(labels)), labels)
     idx = np.asarray(list(range(0, m)))  # record the idx of each point
-# due to removal of PCA
-#     index = np.asarray(list(range(0, m)))  # record the idx of each point
-    # -- apply PCA dimension reduction for multi-variate GAN-AD -- #
-    X_a = samples
-    # -- the best PC dimension is chosen pc=6 -- #
-    n_components = num_signals
-    pca_a = PCA(n_components, svd_solver='full')
-    pca_a.fit(X_a)
-    pc_a = pca_a.components_
-    # projected values on the principal component
-    T_a = np.matmul(X_a, pc_a.transpose(1, 0))
-    print('After main sample multiplicated with PCA component the sample shape is:\n',T_a.shape)
-    samples = T_a
-    num_samples_t = (samples.shape[0] - seq_length) // seq_step
-    aa = np.empty([num_samples_t, seq_length, num_signals])
-    bb = np.empty([num_samples_t, seq_length, 1])
-    bbb = np.empty([num_samples_t, seq_length, 1])
+# # due to removal of PCA
+# #     index = np.asarray(list(range(0, m)))  # record the idx of each point
+#     # -- apply PCA dimension reduction for multi-variate GAN-AD -- #
+#     X_a = samples
+#     # -- the best PC dimension is chosen pc=6 -- #
+#     n_components = num_signals
+#     pca_a = PCA(n_components, svd_solver='full')
+#     pca_a.fit(X_a)
+#     pc_a = pca_a.components_
+#     # projected values on the principal component
+#     T_a = np.matmul(X_a, pc_a.transpose(1, 0))
+#     print('After main sample multiplicated with PCA component the sample shape is:\n',T_a.shape)
+#     samples = T_a
+#     num_samples_t = (samples.shape[0] - seq_length) // seq_step
+#     aa = np.empty([num_samples_t, seq_length, num_signals])
+#     bb = np.empty([num_samples_t, seq_length, 1])
+#     bbb = np.empty([num_samples_t, seq_length, 1])
 
-    for j in range(num_samples_t):
-        bb[j, :, :] = np.reshape(labels[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
-        bbb[j, :, :] = np.reshape(idx[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
-        for i in range(num_signals):
-            aa[j, :, i] = samples[(j * seq_step):(j * seq_step + seq_length), i]
+#     for j in range(num_samples_t):
+#         bb[j, :, :] = np.reshape(labels[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
+#         bbb[j, :, :] = np.reshape(idx[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
+#         for i in range(num_signals):
+#             aa[j, :, i] = samples[(j * seq_step):(j * seq_step + seq_length), i]
 
-    samples = aa
-    labels = bb
-    index = bbb
-    return samples, labels, index
+#     samples = aa
+#     labels = bb
+#     index = bbb
+#     return samples, labels, index
+    return samples, labels, idx 
 
 def get_batch(samples, batch_size, batch_idx, labels=None):
     start_pos = batch_idx * batch_size
