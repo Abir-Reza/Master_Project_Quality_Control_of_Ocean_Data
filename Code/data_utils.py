@@ -71,30 +71,30 @@ def process_train_data(num_signals,seq_length,seq_step, augment = None):
     samples = train[:, 0:n - 1]
     labels = train[:, n - 1]  # the last colummn is label
     
-    # -- apply PCA dimension reduction for multi-variate GAN-AD -- #
-    X_n = samples
-    # -- the best PC dimension is chosen pc=6 -- #
-    n_components = num_signals
-    pca = PCA(n_components, svd_solver='full')
-    pca.fit(X_n)
-    ex_var = pca.explained_variance_ratio_
-    pc = pca.components_
-    # projected values on the principal component
-    T_n = np.matmul(X_n, pc.transpose(1, 0))
-    print('After main sample multiplicated with PCA component the sample shape is:\n',T_n.shape)
-    print('Varience:\n',ex_var)
-    # samples = T_n
-    num_samples = (samples.shape[0] - seq_length) // seq_step
-    aa = np.empty([num_samples, seq_length, num_signals])
-    bb = np.empty([num_samples, seq_length, 1])
+#     # -- apply PCA dimension reduction for multi-variate GAN-AD -- #
+#     X_n = samples
+#     # -- the best PC dimension is chosen pc=6 -- #
+#     n_components = num_signals
+#     pca = PCA(n_components, svd_solver='full')
+#     pca.fit(X_n)
+#     ex_var = pca.explained_variance_ratio_
+#     pc = pca.components_
+#     # projected values on the principal component
+#     T_n = np.matmul(X_n, pc.transpose(1, 0))
+#     print('After main sample multiplicated with PCA component the sample shape is:\n',T_n.shape)
+#     print('Varience:\n',ex_var)
+#     # samples = T_n
+#     num_samples = (samples.shape[0] - seq_length) // seq_step
+#     aa = np.empty([num_samples, seq_length, num_signals])
+#     bb = np.empty([num_samples, seq_length, 1])
 
-    for j in range(num_samples):
-        bb[j, :, :] = np.reshape(labels[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
-        for i in range(num_signals):
-            aa[j, :, i] = samples[(j * seq_step):(j * seq_step + seq_length), i]
+#     for j in range(num_samples):
+#         bb[j, :, :] = np.reshape(labels[(j * seq_step):(j * seq_step + seq_length)], [-1, 1])
+#         for i in range(num_signals):
+#             aa[j, :, i] = samples[(j * seq_step):(j * seq_step + seq_length), i]
 
-    samples = aa
-    labels = bb
+#     samples = aa
+#     labels = bb
     return samples, labels
 
 def process_test_data(num_signals,seq_length,seq_step):
