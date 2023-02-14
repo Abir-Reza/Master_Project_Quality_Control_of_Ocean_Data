@@ -62,7 +62,7 @@ def create_discriminator():
     # x = BatchNormalization()(x)
     x = LSTM(64, return_sequences=True,activation='tanh')(x)
     x = LeakyReLU()(x)
-    x = LSTM(32, return_sequences=True,activation='relu')(x)
+#     x = LSTM(32, return_sequences=True,activation='relu')(x)
     x = Dense(16, activation='relu')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
     discriminator = Model(discriminator_input, discriminator_output)
