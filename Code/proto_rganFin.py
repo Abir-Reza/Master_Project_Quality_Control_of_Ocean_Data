@@ -11,7 +11,7 @@ from keras.regularizers import l2,l1
 from matplotlib import pyplot as plt
 import random
 
-settings_path = '/home/abir/Study/Winter22_23/Project/TEST/Code/settings/gan_train.txt'
+settings_path = '/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/settings/gan_train.txt'
 settings = json.load(open(settings_path, 'r'))
 
 batch_size = settings['batch_size']
@@ -23,7 +23,7 @@ num_of_generated_examples = settings['num_of_generated_examples']
 seq_step = settings['seq_step']
 proximity = settings['proximity']
 optimizer_call_threshold = settings['optimizer_call_threshold']
-d_path = os.path.join('/home/abir/Study/Winter22_23/Project/TEST/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
 
 
 samples,labels = data_utilsFin.process_train_data(num_signal,seq_length,seq_step)
@@ -237,8 +237,8 @@ def generate_result():
         R_labels[start_pos:end_pos, :, :] = T_labels
         I_mb[start_pos:end_pos, :, :] = I_mmb
 
-        np.save('/home/abir/Study/Winter22_23/Project/TEST/Code/saved_model/prediction_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(1) ,D_test)
-        np.save('/home/abir/Study/Winter22_23/Project/TEST/Code/saved_model/real_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(1) ,R_labels)
+        np.save('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/prediction_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(1) ,D_test)
+        np.save('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/real_sequence_seq_length_'+ str(settings['seq_length'])+ '_' + str(1) ,R_labels)
 
         results = np.zeros([10, 4])
         org_shape = data_utilsFin.de_shape(D_test, R_labels, I_mb, seq_step)
