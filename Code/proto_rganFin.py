@@ -242,12 +242,12 @@ def generate_result():
 
         results = np.zeros([10, 4])
         org_shape = data_utilsFin.de_shape(D_test, R_labels, I_mb, seq_step)
-        tao_max = .5                             
+        tao_max = org_shape.max()                             
         # np.max(org_shape)
         # # print(D_test)
         # exit()
         for i in range(1, 10):
-            tao = float(tao_max - (0.0015*i))
+            tao = float(tao_max - (0.01*i))
             Accu, Pre, Rec, F1 = data_utilsFin.get_evaluation(D_test, R_labels, I_mb, seq_step, tao)
             print('Final Evaluation: tao={:.2}; Accu: {:.4}; Pre: {:.4}; Rec: {:.4}; F1: {:.4}\n'
                   .format(tao, Accu, Pre, Rec, F1))
