@@ -254,7 +254,7 @@ def generate_result():
             results[i-1 , :] = [Accu, Pre, Rec, F1]
         return results
 
-train_GAN(num_epoch)
+# train_GAN(num_epoch)
 generate_result()
 
     
