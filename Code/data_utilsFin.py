@@ -170,8 +170,8 @@ def get_evaluation(Label_test, Label_real, I_mb, seq_step, tao):
             D_L[i] = 1
         else:
             D_L[i] = 0
-        print(D_L[i],'\t\t',L_L[i])
-    exit()
+#         print(D_L[i],'\t\t',L_L[i])
+#     exit()
     cc = (D_L == L_L)
     cc = list(cc.reshape([-1]))
     N = cc.count(True)
