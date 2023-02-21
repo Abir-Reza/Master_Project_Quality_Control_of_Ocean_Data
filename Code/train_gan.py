@@ -36,7 +36,7 @@ seq_step = settings['seq_step']
 proximity = settings['proximity']
 optimizer_call_threshold = settings['optimizer_call_threshold']
 # d_path = os.path.join('/home/abir/Study/Winter22_23/Project/TEST/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
-d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] + '/')
+d_path = os.path.join('/home/students/MAD-GAN/Master_Project_Quality_Control_of_Ocean_Data/Code/saved_model/discriminators/model_seq_' + str(seq_length) + '_' + settings['exp'] +'100' + '/')
 
 
 samples,labels = data_utils.process_train_data(num_signal,seq_length,seq_step)
