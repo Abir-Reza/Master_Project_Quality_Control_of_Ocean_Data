@@ -141,7 +141,7 @@ def train_step(train_with_augmented = False):
             generated_data = generator(seed,training =True)
             generated_input_predictions = discriminator(generated_data,training =True)
             # print('\n1. Generator Output: \t',generated_data[0][0])
-            # print('\n\n1. Faka data label: ',np.mean(generated_input_predictions[0]))
+            print('\n\n1. Faka data label: ',np.mean(generated_input_predictions[0]))
             
             # if train_with_augmented:
             #     gen_loss = G_loss_augment(generated_input_predictions,seed_label)
@@ -158,7 +158,7 @@ def train_step(train_with_augmented = False):
 
             real_input_predictions = discriminator(batch_data, training = True)
             real_input_predictions = tf.clip_by_value(real_input_predictions, 1e-5,  1) 
-            # data l print('5. Realabel: ', np.mean(real_input_predictions[0]))
+            print('5. Realabel: ', np.mean(real_input_predictions[0]))
             # print('6. Augmented data label: ', np.mean(augmented_input_predictions[0]))
 
             # if train_with_augmented:
