@@ -158,7 +158,7 @@ def train_step(train_with_augmented = False):
 
             real_input_predictions = discriminator(batch_data, training = True)
             real_input_predictions = tf.clip_by_value(real_input_predictions, 1e-5,  1) 
-            print('5. Realabel: ', np.mean(real_input_predictions[0]))
+#             print('5. Realabel: ', np.mean(real_input_predictions[0]))
             # print('6. Augmented data label: ', np.mean(augmented_input_predictions[0]))
 
             # if train_with_augmented:
