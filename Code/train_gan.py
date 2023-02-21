@@ -185,12 +185,12 @@ def train_step(train_with_augmented = False):
             history_g_grads.append(np.mean(g_grads))
             history_d_grads.append(np.mean(d_grads))
 
-            if(train_with_augmented):
-                history_augment_d_label.append(real_input_predictions[0])
-                history_augment_g_label.append(generated_input_predictions[0])
-            else:
-                history_random_g_label.append(generated_input_predictions[0])
-                history_real_d_label.append(real_input_predictions[0])
+#             if(train_with_augmented):
+#                 history_augment_d_label.append(real_input_predictions[0])
+#                 history_augment_g_label.append(generated_input_predictions[0])
+#             else:
+#                 history_random_g_label.append(generated_input_predictions[0])
+#                 history_real_d_label.append(real_input_predictions[0])
     print ('Discriminator Loss: {} \tGenerator Loss: {}'.format(disc_loss, gen_loss))
 
     return (disc_loss)
