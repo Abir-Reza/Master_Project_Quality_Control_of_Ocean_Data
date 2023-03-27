@@ -1,12 +1,14 @@
 {
 "batch_size": 5,
 "latent_dim" : 30,
-"num_epoch": 30,
-"num_pc_dimention": 7,
+"num_epoch": 40,
+"num_pc_dimention": 1,
 "num_of_generated_examples": 16,
 "seq_step": 30,
 "seq_length":256,
 "exp":"8",
 "proximity": 2.0,
-"optimizer_call_threshold": 35
+"optimizer_call_threshold": 35,
+"g_round" : 2,
+"d_round" : 3
 }
