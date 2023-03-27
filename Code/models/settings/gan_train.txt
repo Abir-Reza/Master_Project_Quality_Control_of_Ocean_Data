@@ -1,0 +1,15 @@
+{
+"batch_size": 5,
+"latent_dim" : 30,
+"num_epoch":50,
+"num_pc_dimention": 4,
+"num_of_generated_examples": 200,
+"seq_step": 20,
+"seq_length":128,
+"exp":"final_1",
+"proximity": 2.0,
+"optimizer_call_threshold": 5,
+"penalty_factor": 0.00,
+"g_round": 3,
+"d_round": 5
+}
