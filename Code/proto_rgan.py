@@ -44,9 +44,9 @@ def create_generator():
 
 def create_discriminator():
     discriminator_input = Input(batch_input_shape=(None,seq_length, num_signal))
-    x = LSTM(128, return_sequences=True, activation='tanh')(discriminator_input)
+    x = LSTM(128, return_sequences=True, activation='relu')(discriminator_input)
     x = BatchNormalization()(x)
-    x = LSTM(64, return_sequences=True,activation='tanh')(x)
+    x = LSTM(64, return_sequences=True,activation='relu')(x)
     x = BatchNormalization()(x)
     x = Dense(16, activation='relu')(x)
     discriminator_output = Dense(1, activation='sigmoid')(x)
@@ -56,8 +56,8 @@ def create_discriminator():
 discriminator = create_discriminator()
 generator = create_generator()
 
-discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.5), loss='binary_crossentropy')
-generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.35), loss='binary_crossentropy')
+discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.85), loss='binary_crossentropy')
+generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=.05), loss='binary_crossentropy')
 discriminator.trainable = False
 
 def D_loss(real_data, fake_data):
